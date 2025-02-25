@@ -34,7 +34,11 @@ def send_email(
     smtp_port: Optional[int] = 465,
 ) -> None:
     """
-    Send simple text messages to email.
+    Send simple messages to email.
+
+    Text Message Hosts:
+
+    * Verizon Text: ``3334445555@vtext.com``
 
     Args:
         smtp_host: SMTP host, such as ``smtp.gmail.com``.
@@ -44,10 +48,6 @@ def send_email(
         body: Simple text to send.
         subject: Subject of the email.
         smtp_port: SMTP port for the SMTP server, defaults to 465.
-
-    Text Message Hosts:
-
-        * Verizon Text: ``3334445555@vtext.com``
     """
     # if recipients is single string, convert to list
     if isinstance(recipients, str):
@@ -163,15 +163,15 @@ def send_sms(
     body: str, recipients: Optional[Union[str, list[str]]] = None
 ) -> list[SmsSendResult]:
     """
-    Send simple text messages to phone numbers using
-    `Azure Communication Services' SMS SDK<https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/sms/send>`_.
+    Send text messages to phone numbers using
+    `Azure Communication Services' SMS SDK <https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/sms/send>`_.
 
     .. note::
 
         This requires
-        `purchasing ($2/month for toll-free) a phone number<https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/telephony/get-phone-number?tabs=windows&pivots=platform-azp>`_
-        in
-        `Azure Communication Services<https://azure.microsoft.com/en-us/products/communication-services>`_.
+        `purchasing a phone number <https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/telephony/get-phone-number?tabs=windows&pivots=platform-azp>`_
+        ($2/month for toll-free) in
+        `Azure Communication Services <https://azure.microsoft.com/en-us/products/communication-services>`_.
 
     Args:
         body: Text message to send.
@@ -236,7 +236,7 @@ def send_pushover(
     user_key: Optional[str] = None,
 ) -> requests.Response:
     """
-    Send notifications using `Pushover platform<https://pushover.net>`_.
+    Send notifications using the `Pushover <https://pushover.net>`_ platform.
 
     .. note::
 
