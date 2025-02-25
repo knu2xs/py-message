@@ -2,11 +2,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Py-Notify Documentation
+Py-Message Documentation
 =============================================================================================================
 
-This documentation is generated from the template defined in ``./docsrc/source/index.rst``. This location and
-file is the place to start creating documentation for your project.
+Py-Message is a lightweight package enabling sending messages from Python using email, simple-message-service (SMS),
+and an application for messaging, Pushover. Pushover is the easiest to get set up. Email, especially if using GMail,
+is a close second. Finally, although extremely convenient once set up, SMS requires the most effort to get up and
+running. The upside is SMS will work with any mobile device, even a 1992 Nokia brick.
 
 Setup
 ------
@@ -17,7 +19,7 @@ Pushover
 Azure Simple-Message-Service (SMS)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``py_message`` API
+Py-Message API
 ===================
 
 .. automodule:: py_message
