@@ -4,12 +4,14 @@ __author__ = "Joel McCune (https://github.com/knu2xs)"
 __license__ = "Apache 2.0"
 __copyright__ = "Copyright 2023 by Joel McCune (https://github.com/knu2xs)"
 
-__all__ = ["send_pushover", "send_sms"]
+__all__ = ["send_email", "send_gmail", "send_sms", "send_pushover"]
 
 import importlib.util
 import logging
 import os
 import re
+import smtplib
+from email.mime.text import MIMEText
 from typing import Optional, Union
 
 import requests
@@ -20,6 +22,116 @@ if importlib.util.find_spec("dotenv"):
     from dotenv import load_dotenv, find_dotenv
 
     load_dotenv(find_dotenv())
+
+
+def send_email(
+    smtp_host: str,
+    sender: str,
+    password: str,
+    recipients: Union[str, list[str]],
+    body: str,
+    subject: Optional[str] = None,
+    smtp_port: Optional[int] = 465,
+) -> None:
+    """
+    Send simple text messages to email.
+
+    Args:
+        smtp_host: SMTP host, such as ``smtp.gmail.com``.
+        sender: Email address of the sender.
+        password: Application password of the sender.
+        recipients: List of email addresses to send to.
+        body: Simple text to send.
+        subject: Subject of the email.
+        smtp_port: SMTP port for the SMTP server, defaults to 465.
+
+    Text Message Hosts:
+
+        * Verizon Text: ``3334445555@vtext.com``
+    """
+    # if recipients is single string, convert to list
+    if isinstance(recipients, str):
+        recipients = [recipients]
+
+    # Create a MIMEText object with the body of the email.
+    msg = MIMEText(body)
+
+    # Set the sender's email.
+    msg["From"] = sender
+
+    # if a subject is provided, add it
+    if subject is not None:
+        msg["Subject"] = subject
+
+    # Join the list of recipients into a single string separated by commas.
+    msg["To"] = ", ".join(recipients)
+
+    # Connect to Gmail's SMTP server using SSL.
+    with smtplib.SMTP_SSL(smtp_host, smtp_port) as smtp_server:
+
+        # Login to the SMTP server using the sender's credentials.
+        smtp_server.login(sender, password)
+
+        # Send the email. The sendmail function requires the sender's email, the list of recipients, and the email
+        # message as a string.
+        smtp_server.sendmail(sender, recipients, msg.as_string())
+
+    # Print a message to console after successfully sending the email.
+    logging.debug(f"Message with text {body} sent to {msg['To']}.")
+
+    return
+
+
+def send_gmail(
+    recipients: Union[str, list[str]],
+    body: str,
+    subject: Optional[str] = None,
+    sender: Optional[str] = None,
+    password: Optional[str] = None,
+) -> None:
+    """
+    Send simple text messages to email using GMail.
+
+    .. note::
+        If ``sender`` and ``password`` is not provided, this function will attempt to retrieve these values from
+        the environment variables ``GMAIL_USERNAME`` and ``GMAIL_PASSWORD``. However, if these are not set in the
+        environment variables and not explicitly provided as input arguments, this function will fail.
+
+    Args:
+        recipients: List of email addresses to send to.
+        body: Simple text to send.
+        subject: Subject of the email.
+        sender: Gmail address of the sender. By default, retrieved from  the ``GMAIL_USERNAME`` environment variable.
+        password: Application password of the sender. By default, retrieved the environment ``GMAIL_PASSWORD`` variable.
+    """
+    # if explicitly provided, use credentials passed in
+    if sender is not None and password is not None:
+        logging.debug("Sending GMail using sender and password provided as arguments.")
+
+    # otherwise, try to retrieve credentials from environment variables
+    else:
+        sender = os.environ.get("GMAIL_USERNAME")
+        password = os.environ.get("GMAIL_PASSWORD")
+
+    # ensure some credentials are found
+    if sender is None or password is None:
+        logging.error(
+            "Cannot retrieve GMail credentials from environment variables, and no GMail credentials were "
+            "provided, so cannot send email."
+        )
+
+    # send email
+    send_email(
+        smtp_host="smtp.gmail.com",
+        sender=sender,
+        subject=subject,
+        password=password,
+        recipients=recipients,
+        body=body,
+        smtp_port=465,
+    )
+
+    return
 
 
 def _validate_phone_number(phone_number: str) -> str:
@@ -51,11 +163,15 @@ def send_sms(
     body: str, recipients: Optional[Union[str, list[str]]] = None
 ) -> list[SmsSendResult]:
     """
-    Send simple text messages to phone numbers using Azure Communication Services' SMS SDK.
+    Send simple text messages to phone numbers using
+    `Azure Communication Services' SMS SDK<https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/sms/send>`_.
 
     .. note::
 
-        This requires purchasing ($2/month for toll-free) a phone number in Azure Communication Services.
+        This requires
+        `purchasing ($2/month for toll-free) a phone number<https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/telephony/get-phone-number?tabs=windows&pivots=platform-azp>`_
+        in
+        `Azure Communication Services<https://azure.microsoft.com/en-us/products/communication-services>`_.
 
     Args:
         body: Text message to send.
@@ -65,7 +181,7 @@ def send_sms(
     if recipients is None:
         recipients = os.environ.get("SMS_NUMBER")
 
-    # if still do not have an sms number, cannot send a message
+    # if still do not have a sms number, cannot send a message
     if recipients is None:
         raise ValueError("Please provide recipient phone number(s).")
 
@@ -120,7 +236,13 @@ def send_pushover(
     user_key: Optional[str] = None,
 ) -> requests.Response:
     """
-    Send notifications using Pushover platform.
+    Send notifications using `Pushover platform<https://pushover.net>`_.
+
+    .. note::
+
+        This *does* require installing the Pushover application on any devices you wish to receive notifications on,
+        but *does not* require applying and getting approved for an SMS notification number. Hence, this frequently
+        is an easier route to getting notifications on a mobile device.
 
     Args:
         message: Text message to send.
