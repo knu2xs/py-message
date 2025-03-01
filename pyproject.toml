@@ -18,9 +18,10 @@ classifiers = [
 license = {file = "LICENSE"}
 dependencies = [
     "azure-communication-sms",
+    "pandas",
     "requests"
 ]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["py_notify"]
+include = ["py_message"]
