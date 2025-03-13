@@ -49,7 +49,7 @@ GOTO %1
 :: Build the local environment from the environment file
 :env
     :: Create new environment from environment file
-    CALL conda env create -p %CONDA_DIR% -f environment.yml
+    CALL conda env create -p %CONDA_DIR% --file=environment.yml
     CALL conda run -p %CONDA_DIR% python -m pip install -e .
 
     GOTO end

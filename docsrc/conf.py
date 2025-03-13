@@ -52,7 +52,6 @@ extensions = [
      'sphinx.ext.viewcode',
     'sphinx_autodoc_typehints',
     'sphinx_copybutton',
-    'nbsphinx'
 ]
 
 intersphinx_mapping = {
@@ -220,7 +219,7 @@ nbsphinx_allow_errors = True
 autoclass_content = 'both'
 
 # enable building of docs on instances without needing to install dependencies
-autodoc_mock_imports = ["arcpy", "arcgis", "pandas", "pyspark"]
+autodoc_mock_imports = ["requests", "azure"]
 
 # prevent nbsphinx from trying to run unrun notebook cells
 nbsphinx_execute = 'never'

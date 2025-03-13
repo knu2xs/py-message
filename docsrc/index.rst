@@ -23,8 +23,8 @@ Pushover
 If looking for the easiest solution, `Pushover <https://pushover.net>`_ is a very easy solution for instant push
 notifications. For $5 per client, Pushover enables sending instant notifications to web clients and mobile devices.
 For $10 I get notifications through Safari on my Mac, and on my iPhone through the Pushover application. I especially
-like the ability to set up different channels, so I have notifications categorized based on what the notification
-pertains to.
+like the ability to set up different channels (*Applications* in Pushover), so I have notifications categorized based 
+on what the notification pertains to.
 
 Getting set up requires installing the client application on your phone, and configuring an application on the website.
 The client application is quite simple, and is available on both `iPhone <https://pushover.net/clients/ios>`_ and
